@@ -27,6 +27,11 @@ import org.apache.commons.lang3.StringUtils
 import japa.parser.ast.visitor.GenericVisitorAdapter
 import com.mysema.scalagen.ast.BeginClosureExpr
 
+object Logger {
+  val verbose = true
+  def debug(s: String): Unit = if(verbose) println(s)
+}
+
 object ScalaDumpVisitor {
 
   private val NL_THRESHOLD = 100
@@ -239,6 +244,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: CompilationUnit, arg: Context) {
+    Logger.debug(s"Visiting CompilationUnit ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.getPackage != null) {
       n.getPackage.accept(this, arg)
     }
@@ -295,6 +301,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: PackageDeclaration, arg: Context) {
+    Logger.debug(s"Visiting PackageDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("package ")
     if (!isEmpty(n.getAnnotations)) {
       printer.print(split(n.getName)._1)
@@ -306,6 +313,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: NameExpr, arg: Context) {
+    Logger.debug(s"Visiting NameExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     visitName(n.getName)
   }
 
@@ -320,12 +328,14 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: QualifiedNameExpr, arg: Context) {
+    Logger.debug(s"Visiting QualifiedNameExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     n.getQualifier.accept(this, arg)
     printer.print(".")
     visitName(n.getName)
   }
 
   def visit(n: ImportDeclaration, arg: Context) {
+    Logger.debug(s"Visiting ImportDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("import ")
     if (n.getName.getName.endsWith(".Array") && !n.isAsterisk) {
       val className = n.getName.getName
@@ -342,6 +352,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ClassOrInterfaceDeclaration, arg: Context) {
+    Logger.debug(s"Visiting ClassOrInterfaceDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     // TODO : simplify
     printJavadoc(n.getJavaDoc, arg)
     printMemberAnnotations(n.getAnnotations, arg)
@@ -410,10 +421,12 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: EmptyTypeDeclaration, arg: Context) {
+    Logger.debug(s"Visiting EmptyTypeDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printJavadoc(n.getJavaDoc, arg)
   }
 
   def visit(n: JavadocComment, arg: Context) {
+    Logger.debug(s"Visiting JavadocComment ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.printLn("/**")
     for (line <- StringUtils.split(n.getContent.trim, '\n')) {
       printer.printLn(" " + line.trim)
@@ -422,6 +435,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ClassOrInterfaceType, arg: Context) {
+    Logger.debug(s"Visiting ClassOrInterfaceType ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.getScope != null) {
       n.getScope.accept(this, arg)
       printer.print(".")
@@ -453,6 +467,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: TypeParameter, arg: Context) {
+    Logger.debug(s"Visiting TypeParameter ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print(n.getName)
     if (n.getTypeBound != null) {
       printer.print(" <: ")
@@ -467,10 +482,12 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: PrimitiveType, arg: Context) {
+    Logger.debug(s"Visiting PrimitiveType ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print(n.getType.name)
   }
 
   def visit(n: ReferenceType, arg: Context) {
+    Logger.debug(s"Visiting ReferenceType ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     val typeArg = arg.typeArg
     for (i <- 0 until n.getArrayCount) {
       printer.print("Array[")
@@ -484,6 +501,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: WildcardType, arg: Context) {
+    Logger.debug(s"Visiting WildcardType ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("_")
     if (n.getExtends != null) {
       printer.print(" <: ")
@@ -496,6 +514,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: FieldDeclaration, arg: Context) {
+    Logger.debug(s"Visiting FieldDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     val oldType = arg.assignType
     arg.assignType = n.getType
     printJavadoc(n.getJavaDoc, arg)
@@ -531,6 +550,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: VariableDeclarator, arg: Context) {
+    Logger.debug(s"Visiting VariableDeclarator ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     n.getId.accept(this, arg)
     if (n.getInit != null) {
       printer.print(" = ")
@@ -539,6 +559,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: VariableDeclaratorId, arg: Context) {
+    Logger.debug(s"Visiting VariableDeclaratorId ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     visitName(n.getName)
 //    for (i <- 0 until n.getArrayCount) {
 //      printer.print("[]")
@@ -546,6 +567,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ArrayInitializerExpr, arg: Context) {
+    Logger.debug(s"Visiting ArrayInitializerExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("Array(")
     if (n.getValues != null) {
       var i = n.getValues.iterator()
@@ -560,10 +582,12 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: VoidType, arg: Context) {
+    Logger.debug(s"Visiting VoidType ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("Unit")
   }
 
   def visit(n: ArrayAccessExpr, arg: Context) {
+    Logger.debug(s"Visiting ArrayAccessExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     val arrayAccess = arg.arrayAccess
     arg.arrayAccess = true
     n.getName.accept(this, arg)
@@ -574,6 +598,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ArrayCreationExpr, arg: Context) {
+    Logger.debug(s"Visiting ArrayCreationExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.getDimensions != null) {
 
       if (arg.assignType != null) {
@@ -601,6 +626,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: AssignExpr, arg: Context) {
+    Logger.debug(s"Visiting AssignExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     n.getTarget.accept(this, arg)
     printer.print(" ")
     import AssignExpr.{Operator => Op}
@@ -624,6 +650,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: BinaryExpr, arg: Context) {
+    Logger.debug(s"Visiting BinaryExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     n.getLeft.accept(this, arg)
     printer.print(" ")
     import BinaryExpr.{Operator => Op}
@@ -650,14 +677,15 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
     }
     printer.print(symbol)
     printer.print(" ")
-    if (settings.splitLongLines && (print(n.getLeft, arg).length > 50 || print(n.getRight, arg).length > 50)) {
-      printer.printLn()
-      printer.print("  ")
-    }
+    // if (settings.splitLongLines && (print(n.getLeft, arg).length > 50 || print(n.getRight, arg).length > 50)) {
+    //   printer.printLn()
+    //   printer.print("  ")
+    // }
     n.getRight.accept(this, arg)
   }
 
   def visit(n: CastExpr, arg: Context) {
+    Logger.debug(s"Visiting CastExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     n.getExpr.accept(this, arg)
     if (n.getType.isInstanceOf[PrimitiveType]) {
       printer.print(".to")
@@ -670,6 +698,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ClassExpr, arg: Context) {
+    Logger.debug(s"Visiting ClassExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("classOf[")
     arg.classOf = true
     n.getType.accept(this, arg)
@@ -678,6 +707,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ConditionalExpr, arg: Context) {
+    Logger.debug(s"Visiting ConditionalExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("if (")
     n.getCondition.accept(this, arg)
     printer.print(") ")
@@ -687,6 +717,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: EnclosedExpr, arg: Context) {
+    Logger.debug(s"Visiting EnclosedExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.getInner.isInstanceOf[CastExpr]) {
       n.getInner.accept(this, arg)
     } else {
@@ -697,12 +728,14 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: FieldAccessExpr, arg: Context) {
+    Logger.debug(s"Visiting FieldAccessExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     n.getScope.accept(this, arg)
     printer.print(".")
     visitName(n.getField)
   }
 
   def visit(n: InstanceOfExpr, arg: Context) {
+    Logger.debug(s"Visiting InstanceOfExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     n.getExpr.accept(this, arg)
     printer.print(".isInstanceOf[")
     n.getType.accept(this, arg)
@@ -710,20 +743,24 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: CharLiteralExpr, arg: Context) {
+    Logger.debug(s"Visiting CharLiteralExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("'")
     printer.print(n.getValue)
     printer.print("'")
   }
 
   def visit(n: DoubleLiteralExpr, arg: Context) {
+    Logger.debug(s"Visiting DoubleLiteralExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print(removeUnderscores(n.getValue))
   }
 
   def visit(n: IntegerLiteralExpr, arg: Context) {
+    Logger.debug(s"Visiting IntegerLiteralExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print(numberValue(n.getValue, "Integer.parseInt"))
   }
 
   def visit(n: LongLiteralExpr, arg: Context) {
+    Logger.debug(s"Visiting LongLiteralExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print(numberValue(n.getValue, "java.lang.Long.parseLong"))
   }
   
@@ -743,28 +780,35 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: IntegerLiteralMinValueExpr, arg: Context) {
+    Logger.debug(s"Visiting IntegerLiteralMinValueExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print(n.getValue)
   }
 
   def visit(n: LongLiteralMinValueExpr, arg: Context) {
+    Logger.debug(s"Visiting LongLiteralMinValueExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print(n.getValue)
   }
 
   def visit(n: StringLiteralExpr, arg: Context) {
+    Logger.debug(s"Visiting StringLiteralExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
+    // sys.exit(0)
     printer.print("\"")
     printer.print(n.getValue)
     printer.print("\"")
   }
 
   def visit(n: BooleanLiteralExpr, arg: Context) {
+    Logger.debug(s"Visiting BooleanLiteralExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print(String.valueOf(n.getValue))
   }
 
   def visit(n: NullLiteralExpr, arg: Context) {
+    Logger.debug(s"Visiting NullLiteralExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("null")
   }
 
   def visit(n: ThisExpr, arg: Context) {
+    Logger.debug(s"Visiting ThisExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.getClassExpr != null) {
       n.getClassExpr.accept(this, arg)
       printer.print(".")
@@ -773,6 +817,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: SuperExpr, arg: Context) {
+    Logger.debug(s"Visiting SuperExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.getClassExpr != null) {
       n.getClassExpr.accept(this, arg)
       printer.print(".")
@@ -781,6 +826,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: MethodCallExpr, arg: Context) {
+    Logger.debug(s"Visiting MethodCallExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     //val split = arg.split
     var args = if (n.getArgs == null) 0 else n.getArgs.size
     val shortForm = ((SHORT_FORM.contains(n.getName) && args < 2 && !n.getArgs.get(0).isInstanceOf[LiteralExpr]) 
@@ -819,6 +865,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ObjectCreationExpr, arg: Context) {
+    Logger.debug(s"Visiting ObjectCreationExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.getScope != null) {
       n.getScope.accept(this, arg)
       printer.print(".")
@@ -837,6 +884,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: UnaryExpr, arg: Context) {
+    Logger.debug(s"Visiting UnaryExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     import UnaryExpr.{Operator => Op}
 
     // !x.equals(y) into x != y
@@ -879,6 +927,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ConstructorDeclaration, arg: Context) {
+    Logger.debug(s"Visiting ConstructorDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printConstructor(n, arg, false)
   }
 
@@ -918,6 +967,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: MethodDeclaration, arg: Context) {
+    Logger.debug(s"Visiting MethodDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     arg.inObjectEquals = n.getName == "equals" && n.getParameters.size == 1
     printJavadoc(n.getJavaDoc, arg)
     var hasOverride = printMemberAnnotations(n.getAnnotations, arg)
@@ -972,6 +1022,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: Parameter, arg: Context) {
+    Logger.debug(s"Visiting Parameter ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printAnnotations(n.getAnnotations, arg)
     printModifiers(n.getModifiers)
     if (n.getModifiers.isProperty) {
@@ -992,6 +1043,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
   
   def visit(n: MultiTypeParameter, arg: Context) {
+    Logger.debug(s"Visiting MultiTypeParameter ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printAnnotations(n.getAnnotations, arg)
     printModifiers(n.getModifiers)
     if (n.getModifiers.isProperty) {
@@ -1018,6 +1070,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ExplicitConstructorInvocationStmt, arg: Context) {
+    Logger.debug(s"Visiting ExplicitConstructorInvocationStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.isThis) {
       printTypeArgs(n.getTypeArgs, arg)
       printer.print("this")
@@ -1057,6 +1110,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   } 
 
   def visit(n: VariableDeclarationExpr, arg: Context) {
+    Logger.debug(s"Visiting VariableDeclarationExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     val asParameter = n.getModifiers == -1
     var modifier = if (ModifierSet.isFinal(n.getModifiers)) "val " else "var "
     var i = n.getVars.iterator()
@@ -1113,10 +1167,12 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: TypeDeclarationStmt, arg: Context) {
+    Logger.debug(s"Visiting TypeDeclarationStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     n.getTypeDeclaration.accept(this, arg)
   }
 
   def visit(n: AssertStmt, arg: Context) {
+    Logger.debug(s"Visiting AssertStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("assert(")
     n.getCheck.accept(this, arg)
     printer.print(")")
@@ -1127,6 +1183,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: BlockStmt, arg: Context) {
+    Logger.debug(s"Visiting BlockStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (!isEmpty(n.getStmts)
      && !arg.noUnwrap.contains(n)
      && n.getStmts.size == 1 
@@ -1140,8 +1197,12 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
       val s = n.getStmts.iterator()
       val returnOn = arg.returnOn
       def print(stmt: Statement) {
-        stmt.accept(this,arg)
-        printer.printLn()
+        stmt match {
+          case b: BlockStmt => b.getStmts.foreach(print)
+          case _ => 
+            stmt.accept(this,arg)
+            printer.printLn()
+        }
       }
       while (s.hasNext) {
         val stmt = s.next()
@@ -1158,19 +1219,23 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: LabeledStmt, arg: Context) {
+    Logger.debug(s"Visiting LabeledStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print(n.getLabel)
     printer.print(": ")
     n.getStmt.accept(this, arg)
   }
 
   def visit(n: EmptyStmt, arg: Context) {
+    Logger.debug(s"Visiting EmptyStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
   }
 
   def visit(n: ExpressionStmt, arg: Context) {
+    Logger.debug(s"Visiting ExpressionStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     n.getExpression.accept(this, arg)
   }
 
   def visit(n: SwitchStmt, arg: Context) {
+    Logger.debug(s"Visiting SwitchStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     val oldSkip = arg.skip
     arg.skip = false
     n.getSelector.accept(this, arg)
@@ -1190,6 +1255,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: SwitchEntryStmt, arg: Context) {
+    Logger.debug(s"Visiting SwitchEntryStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (arg.skip) {
       printer.print(" | ")
       if (n.getLabel != null) {
@@ -1203,6 +1269,14 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
         printer.print("_")
       }
     }
+    def print(stmt: Statement) {
+      stmt match {
+        case b: BlockStmt => b.getStmts.foreach(print)
+        case _ => 
+          stmt.accept(this,arg)
+          printer.printLn()
+      }
+    }
     arg.skip = n.getStmts == null
     if (n.getStmts != null) {
       printer.print(" => ")
@@ -1212,8 +1286,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
         printer.printLn()
         printer.indent()
         for (s <- n.getStmts) {
-          s.accept(this, arg)
-          printer.printLn()
+          print(s)
         }
         printer.unindent()
       }
@@ -1221,6 +1294,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: BreakStmt, arg: Context) {
+    Logger.debug(s"Visiting BreakStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("//break")
 //    if (n.getId != null) {
 //      printer.print(" ")
@@ -1229,6 +1303,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ReturnStmt, arg: Context) {
+    Logger.debug(s"Visiting ReturnStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.getExpr != null) {
       if (arg.returnOn) {
         printer.print("return ")
@@ -1240,6 +1315,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: EnumDeclaration, arg: Context) {
+    Logger.debug(s"Visiting EnumDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     // Java syntax
     printJavadoc(n.getJavaDoc, arg)
     printMemberAnnotations(n.getAnnotations, arg)
@@ -1281,6 +1357,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: EnumConstantDeclaration, arg: Context) {
+    Logger.debug(s"Visiting EnumConstantDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     // Java syntax
     printJavadoc(n.getJavaDoc, arg)
     printMemberAnnotations(n.getAnnotations, arg)
@@ -1298,10 +1375,12 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: EmptyMemberDeclaration, arg: Context) {
+    Logger.debug(s"Visiting EmptyMemberDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printJavadoc(n.getJavaDoc, arg)
   }
 
   def visit(n: InitializerDeclaration, arg: Context) {
+    Logger.debug(s"Visiting InitializerDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.getBlock.getStmts != null) {
       val i = n.getBlock.getStmts.iterator
       while (i.hasNext) {
@@ -1318,6 +1397,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: IfStmt, arg: Context) {
+    Logger.debug(s"Visiting IfStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("if (")
     n.getCondition.accept(this, arg)
     printer.print(") ")
@@ -1329,6 +1409,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: WhileStmt, arg: Context) {
+    Logger.debug(s"Visiting WhileStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("while (")
     n.getCondition.accept(this, arg)
     printer.print(") ")
@@ -1336,6 +1417,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ContinueStmt, arg: Context) {
+    Logger.debug(s"Visiting ContinueStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("//continue")
 //    if (n.getId != null) {
 //      printer.print(" ")
@@ -1345,6 +1427,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: DoStmt, arg: Context) {
+    Logger.debug(s"Visiting DoStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("do ")
     n.getBody.accept(this, arg)
     printer.print(" while (")
@@ -1353,6 +1436,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ForeachStmt, arg: Context) {
+    Logger.debug(s"Visiting ForeachStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("for (")
     n.getVariable.getVars.get(0).accept(this, arg)
     printer.print(" <- ")
@@ -1396,6 +1480,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ForStmt, arg: Context) {
+    Logger.debug(s"Visiting ForStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     // init
     if (n.getInit != null) {
       n.getInit.foreach { i =>
@@ -1437,11 +1522,13 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: ThrowStmt, arg: Context) {
+    Logger.debug(s"Visiting ThrowStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("throw ")
     n.getExpr.accept(this, arg)
   }
 
   def visit(n: SynchronizedStmt, arg: Context) {
+    Logger.debug(s"Visiting SynchronizedStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     if (n.getExpr != null) {
       printer.print("synchronized (")
       n.getExpr.accept(this, arg)
@@ -1453,6 +1540,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
   
   def visit(n: TryStmt, arg: Context) {
+    Logger.debug(s"Visiting TryStmt ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     val wrapInTry = !isEmpty(n.getCatchs()) || n.getFinallyBlock() != null
     if (wrapInTry) {
       printer.print("try ")
@@ -1513,6 +1601,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: CatchClause, arg: Context) {
+    Logger.debug(s"Visiting CatchClause ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("case ")
     n.getExcept.accept(this, arg)
     printer.print(" => ")
@@ -1527,6 +1616,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: AnnotationDeclaration, arg: Context) {
+    Logger.debug(s"Visiting AnnotationDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     // Java syntax
     printJavadoc(n.getJavaDoc, arg)
     printMemberAnnotations(n.getAnnotations, arg)
@@ -1543,6 +1633,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: AnnotationMemberDeclaration, arg: Context) {
+    Logger.debug(s"Visiting AnnotationMemberDeclaration ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     // Java syntax
     printJavadoc(n.getJavaDoc, arg)
     printMemberAnnotations(n.getAnnotations, arg)
@@ -1557,11 +1648,13 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: MarkerAnnotationExpr, arg: Context) {
+    Logger.debug(s"Visiting MarkerAnnotationExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("@")
     n.getName.accept(this, arg)
   }
 
   def visit(n: SingleMemberAnnotationExpr, arg: Context) {
+    Logger.debug(s"Visiting SingleMemberAnnotationExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("@")
     n.getName.accept(this, arg)
     printer.print("(")
@@ -1570,6 +1663,7 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: NormalAnnotationExpr, arg: Context) {
+    Logger.debug(s"Visiting NormalAnnotationExpr ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("@")
     n.getName.accept(this, arg)
     printer.print("(")
@@ -1586,17 +1680,20 @@ class ScalaDumpVisitor(settings: ConversionSettings) extends VoidVisitor[ScalaDu
   }
 
   def visit(n: MemberValuePair, arg: Context) {
+    Logger.debug(s"Visiting MemberValuePair ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     visitName(n.getName)
     printer.print(" = ")
     n.getValue.accept(this, arg)
   }
 
   def visit(n: LineComment, arg: Context) {
+    Logger.debug(s"Visiting LineComment ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("//")
     printer.printLn(n.getContent)
   }
 
   def visit(n: BlockComment, arg: Context) {
+    Logger.debug(s"Visiting BlockComment ${n.getBeginLine()}:${n.getBeginColumn()} >> ${n.getEndLine()}:${n.getEndColumn()}: ${n.toString().take(50).split("\n").head}")
     printer.print("/*")
     printer.print(n.getContent)
     printer.printLn("*/")

@@ -98,6 +98,7 @@ class Converter(encoding: String, transformers: List[UnitTransformer]) {
   
   def convertFile(in: File, out: File) {
     try {
+      println(s"# Converting ${in.getAbsolutePath()} to ${out.getAbsolutePath()}")
       val compilationUnit = JavaParser.parse(in, encoding)
       val sources = toScala(compilationUnit)   
       FileUtils.writeStringToFile(out, sources, "UTF-8")  
@@ -115,9 +116,14 @@ class Converter(encoding: String, transformers: List[UnitTransformer]) {
     if (unit.getImports == null) {
       unit.setImports(new ArrayList[ImportDeclaration]())  
     }    
-    val transformed = transformers.foldLeft(unit) { case (u,t) => t.transform(u) }    
+    val transformed = transformers.foldLeft(unit) { case (u,t) => {
+      println(s"## ${t.getClass.getName}")
+      t.transform(u)
+    }}    
     var visitor = new ScalaDumpVisitor(settings)
+    println(s"## [Transforms Complete] ScalaDump")
     transformed.accept(visitor, new ScalaDumpVisitor.Context())
+    println(s"## Dump done")
     visitor.getSource
   }
   
